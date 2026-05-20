@@ -65,7 +65,7 @@ p {
   --line-2: #e2def1;
 
   /* Warna brand */
-  --violet: #6c5ce7;
+  --violet: #16a34a;
   --violet-2: #5849d0;
   --violet-soft: #efebff;
 
@@ -84,6 +84,8 @@ p {
     0 8px 24px -8px rgba(64, 52, 128, 0.12),
     0 2px 6px -1px rgba(20, 18, 40, 0.04);
   --shadow-lg: 0 24px 60px -20px rgba(64, 52, 128, 0.22);
+
+  --r-xl: 24px;
 }
 
 body {
@@ -607,7 +609,7 @@ body {
 
 /* Kartu saldo */
 .balance-card {
-  border-radius: 20px;
+  border-radius: var(--r-xl);
   padding: 26px;
   color: white;
   background: linear-gradient(135deg, #6c5ce7 0%, #8b5cf6 55%, #a78bfa 100%);
