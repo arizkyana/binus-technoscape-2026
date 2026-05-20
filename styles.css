@@ -901,6 +901,13 @@ body {
   padding: 18px 22px 22px;
 }
 
+/* Chart Wrap */
+.chart-wrap {
+  position: relative;
+  height: 280px;
+  margin-top: 12px;
+}
+
 /* ---------- 7. RESPONSIVE ---------- */
 @media (max-width: 860px) {
   .app {
