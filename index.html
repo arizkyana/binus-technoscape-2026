@@ -397,8 +397,17 @@
             <dl class="summary" id="profile-summary"></dl>
           </article>
         </section>
+
+        <footer>Dompetku &copy; 2026</footer>
       </main>
     </section>
+    <!-- <div> vs <section> in the Accessibility Tree                                                                                 
+                                                                                                                               
+  <div> = invisible to assistive tech. It's a pure layout/styling container. Screen readers and the accessibility tree skip it 
+  entirely. In your code, things like .balance-card, .sidebar__brand, .user-card — they don't appear in the tree at all.       
+                                                                                                                      
+  Semantic elements = visible with a role. They carry implicit ARIA roles, so they show up in the accessibility tree. That's   
+  exactly what you saw -->
 
     <!--
     ===================================================================
