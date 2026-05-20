@@ -1,0 +1,944 @@
+/* ===========================================================================
+   Dompetku — Stylesheet
+   ---------------------------------------------------------------------------
+   Struktur:
+     1. RESET & DASAR        -> normalisasi default browser
+     2. CSS VARIABLES        -> warna, radius, shadow (mudah diubah)
+     3. UTILITAS             -> .btn, .card, .field, dst
+     4. ONBOARDING           -> tampilan form awal
+     5. APP SHELL            -> sidebar + main
+     6. KOMPONEN             -> balance card, tx list, modal, dll.
+     7. RESPONSIVE           -> media query untuk mobile
+   ===========================================================================*/
+
+/* ---------- 1. RESET DASAR ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+input,
+select,
+textarea {
+  font: inherit;
+}
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- 2. CSS VARIABLES ----------
+   Variabel CSS membuat warna konsisten & gampang diubah dari satu tempat. */
+:root {
+  /* Warna dasar */
+  --bg: #f6f4fb;
+  --surface: #ffffff;
+  --ink: #15131f;
+  --ink-2: #4b4858;
+  --muted: #8a879a;
+  --line: #ece9f5;
+  --line-2: #e2def1;
+
+  /* Warna brand */
+  --violet: #6c5ce7;
+  --violet-2: #5849d0;
+  --violet-soft: #efebff;
+
+  /* Semantik (sukses/gagal) */
+  --green: #18b26b;
+  --green-soft: #e5f6ed;
+  --red: #e5484d;
+  --red-soft: #fcebec;
+  --amber: #f5a524;
+
+  /* Radius, shadow */
+  --r-sm: 10px;
+  --r: 14px;
+  --r-lg: 18px;
+  --shadow:
+    0 8px 24px -8px rgba(64, 52, 128, 0.12),
+    0 2px 6px -1px rgba(20, 18, 40, 0.04);
+  --shadow-lg: 0 24px 60px -20px rgba(64, 52, 128, 0.22);
+}
+
+body {
+  font-family:
+    "Plus Jakarta Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- 3. UTILITAS / KOMPONEN UMUM ---------- */
+
+/* Logo bujur sangkar dengan huruf "S" */
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6c5ce7, #a78bfa);
+  color: white;
+  font-weight: 800;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px -8px rgba(108, 92, 231, 0.6);
+}
+
+/* Tombol */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn--primary {
+  background: var(--violet);
+  color: white;
+  box-shadow: 0 8px 20px -8px rgba(108, 92, 231, 0.6);
+}
+.btn--primary:hover {
+  background: var(--violet-2);
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-2);
+  border: 1.5px solid var(--line-2);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Kartu */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.card__title {
+  font-size: 16px;
+  font-weight: 700;
+}
+.card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+/* Field form (label + input + error) */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.field--full {
+  grid-column: 1 / -1;
+}
+.field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.field .req {
+  color: var(--red);
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 12px;
+  background: white;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.field textarea {
+  height: auto;
+  padding: 12px 14px;
+  resize: vertical;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.16);
+}
+/* Style ketika input invalid (ditambahkan oleh JS) */
+.field.is-invalid input,
+.field.is-invalid select,
+.field.is-invalid textarea {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+.hint {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin: 0;
+}
+.error {
+  font-size: 12px;
+  color: var(--red);
+  margin: 0;
+  min-height: 16px;
+}
+
+/* Grid 2 kolom untuk form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Input dengan prefix mata uang */
+.input-currency {
+  position: relative;
+}
+.input-currency__prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-weight: 600;
+}
+.input-currency input {
+  padding-left: 38px;
+}
+.input-currency--lg input {
+  height: 56px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* Callout (kotak info kecil) */
+.callout {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--violet-soft);
+  border: 1px dashed var(--line-2);
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+/* ---------- 4. ONBOARDING ---------- */
+.onboarding {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+  background: linear-gradient(180deg, #f6f4fb 0%, #ece7fb 100%);
+}
+.onboarding__card {
+  width: 100%;
+  max-width: 720px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 28px;
+}
+.onboarding__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.onboarding__title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.onboarding__subtitle {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+.stepper__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.stepper__num {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.stepper__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stepper__item.is-active .stepper__num {
+  background: var(--violet);
+  color: white;
+}
+.stepper__item.is-active .stepper__label,
+.stepper__item.is-done .stepper__label {
+  color: var(--ink);
+}
+.stepper__item.is-done .stepper__num {
+  background: var(--green);
+  color: white;
+}
+
+/* Langkah form: hanya yang .is-active yang ditampilkan */
+.form-step {
+  display: none;
+}
+.form-step.is-active {
+  display: block;
+}
+.form-step__title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.form-step__desc {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 6px 0 18px;
+}
+
+/* Tombol navigasi form */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.form-actions--right {
+  justify-content: flex-end;
+  border-top: none;
+  padding-top: 8px;
+}
+
+/* Daftar ringkasan (key-value) */
+.summary {
+  display: grid;
+  gap: 8px;
+}
+.summary > div {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.summary dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+.summary dd {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Checkbox persetujuan */
+.agree {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1.5px solid var(--line-2);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.agree input {
+  accent-color: var(--violet);
+  margin-top: 3px;
+}
+
+/* ---------- 5. APP SHELL (sidebar + main) ---------- */
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: white;
+  border-right: 1px solid var(--line);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+}
+.sidebar__title {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+.sidebar__version {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--violet-soft);
+}
+.user-card__info {
+  min-width: 0;
+}
+.user-card__name {
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-card__email {
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6c5ce7, #a78bfa);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav__item {
+  padding: 11px 12px;
+  text-align: left;
+  border-radius: 10px;
+  color: var(--ink-2);
+  font-weight: 600;
+  font-size: 14px;
+}
+.nav__item:hover {
+  background: var(--bg);
+}
+.nav__item.is-active {
+  background: var(--violet);
+  color: white;
+  box-shadow: 0 8px 20px -8px rgba(108, 92, 231, 0.6);
+}
+.nav__item--reset {
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Main content */
+.main {
+  min-width: 0;
+  padding: 0 24px 80px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0 16px;
+}
+.topbar__menu {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: white;
+  font-size: 16px;
+}
+.topbar__greet small {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.topbar__greet h2 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.topbar > .btn {
+  margin-left: auto;
+}
+
+/* View (halaman) */
+.view {
+  display: none;
+}
+.view.is-active {
+  display: block;
+}
+.view + .view {
+  margin-top: 0;
+}
+.card + .card,
+.card + .grid,
+.grid + .card,
+.balance-card + .grid,
+.grid + .card {
+  margin-top: 18px;
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+.grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.page-header {
+  margin-bottom: 14px;
+}
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.page-desc {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.link {
+  color: var(--violet);
+  font-weight: 700;
+  font-size: 13px;
+  background: none;
+  border: none;
+}
+
+/* ---------- 6. KOMPONEN SPESIFIK ---------- */
+
+/* Kartu saldo */
+.balance-card {
+  border-radius: 20px;
+  padding: 26px;
+  color: white;
+  background: linear-gradient(135deg, #6c5ce7 0%, #8b5cf6 55%, #a78bfa 100%);
+  box-shadow: 0 20px 50px -20px rgba(108, 92, 231, 0.55);
+  position: relative;
+  overflow: hidden;
+}
+.balance-card::after {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.balance-card__label {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.balance-card__amount {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.balance-card__stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.stat__label {
+  font-size: 11.5px;
+  font-weight: 600;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stat__value {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Budget progress bar */
+.budget__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 12px 0 8px;
+}
+.budget__spent {
+  font-size: 24px;
+  font-weight: 800;
+}
+.budget__limit {
+  color: var(--muted);
+  font-size: 13px;
+}
+.progress {
+  height: 10px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress__bar {
+  height: 100%;
+  background: var(--violet);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.progress__bar.is-warn {
+  background: var(--amber);
+}
+.progress__bar.is-danger {
+  background: var(--red);
+}
+.budget__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.budget__meta .left {
+  color: var(--muted);
+}
+.budget__meta .right {
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* Daftar akun */
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.account-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--bg);
+}
+.account-list .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.account-list .name {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+.account-list .amount {
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Daftar transaksi (digunakan di dashboard & halaman transaksi) */
+.tx-list {
+  display: flex;
+  flex-direction: column;
+}
+.tx-item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 4px;
+  border-top: 1px solid var(--line);
+}
+.tx-item:first-child {
+  border-top: none;
+}
+.tx-item__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.tx-item__title {
+  font-weight: 600;
+  font-size: 14px;
+}
+.tx-item__meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.tx-item__amount {
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.tx-item__amount.is-in {
+  color: var(--green);
+}
+.tx-item__delete {
+  color: var(--muted);
+  padding: 6px;
+  border-radius: 8px;
+}
+.tx-item__delete:hover {
+  color: var(--red);
+  background: var(--red-soft);
+}
+
+/* Filter bar (halaman transaksi) */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.seg {
+  display: inline-flex;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.seg--full {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 14px;
+}
+.seg__btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--muted);
+}
+.seg__btn.is-active {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.search {
+  flex: 1;
+  min-width: 200px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  outline: none;
+  font-size: 13.5px;
+}
+.search:focus {
+  border-color: var(--violet);
+}
+
+/* Empty state */
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13.5px;
+  background: var(--bg);
+  border-radius: 12px;
+}
+
+/* ---------- Modal ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 18, 40, 0.5);
+  backdrop-filter: blur(4px);
+}
+.modal__panel {
+  position: relative;
+  background: white;
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+}
+.modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.modal__header h3 {
+  font-size: 17px;
+  font-weight: 800;
+}
+.modal__close {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 14px;
+}
+#form-add {
+  padding: 18px 22px 22px;
+}
+
+/* ---------- 7. RESPONSIVE ---------- */
+@media (max-width: 860px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.25s;
+    z-index: 60;
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+  .topbar__menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .grid--2 {
+    grid-template-columns: 1fr;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .summary > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .main {
+    padding: 0 14px 80px;
+  }
+}
+@media (max-width: 480px) {
+  .balance-card__amount {
+    font-size: 28px;
+  }
+  .tx-item {
+    grid-template-columns: 40px 1fr auto;
+  }
+  .tx-item__delete {
+    display: none;
+  }
+}

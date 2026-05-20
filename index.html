@@ -1,0 +1,488 @@
+<!doctype html>
+<!--
+  ===========================================================================
+  Dompetku — Expense Tracker (Versi Pembelajaran / Beginner Friendly)
+  ---------------------------------------------------------------------------
+  Dibangun dengan HTML + CSS + JavaScript murni (tanpa framework).
+  Tujuan: bahan ajar Frontend Development untuk mahasiswa & pemula.
+
+  Struktur file:
+    - index.html  -> kerangka halaman (markup semantik)
+    - styles.css  -> tampilan (warna, layout, responsif)
+    - app.js      -> logika (state, render, event, localStorage)
+
+  Cara kerja singkat:
+    1. Saat halaman dibuka, app.js mengecek apakah user sudah onboarding.
+    2. Bila belum, tampilkan <section id="onboarding"> (3 langkah form).
+    3. Bila sudah, tampilkan <section id="app"> (sidebar + main).
+    4. Data disimpan di localStorage browser (tidak ke server).
+  ===========================================================================
+-->
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dompetku — Expense Tracker (Belajar Frontend)</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans untuk teks utama, JetBrains Mono untuk angka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Stylesheet utama -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!--
+    ===================================================================
+    1. ONBOARDING (Multi-step Form)
+    -------------------------------------------------------------------
+    Form 3 langkah untuk mendaftarkan user pertama kali.
+    Setiap langkah ada di dalam <div class="form-step"> berbeda.
+    JS akan mengontrol langkah mana yang aktif (class "is-active").
+    ===================================================================
+  -->
+    <section id="onboarding" class="onboarding" hidden>
+      <div class="onboarding__card">
+        <!-- Header brand -->
+        <header class="onboarding__brand">
+          <div class="logo">D</div>
+          <div>
+            <h1 class="onboarding__title">Dompetku</h1>
+            <p class="onboarding__subtitle">
+              Lacak pengeluaran, kontrol keuangan.
+            </p>
+          </div>
+        </header>
+
+        <!-- Indikator langkah (stepper) -->
+        <ol class="stepper" id="stepper">
+          <li class="stepper__item is-active" data-step="1">
+            <span class="stepper__num">1</span>
+            <span class="stepper__label">Data Pribadi</span>
+          </li>
+          <li class="stepper__item" data-step="2">
+            <span class="stepper__num">2</span>
+            <span class="stepper__label">Keuangan</span>
+          </li>
+          <li class="stepper__item" data-step="3">
+            <span class="stepper__num">3</span>
+            <span class="stepper__label">Konfirmasi</span>
+          </li>
+        </ol>
+
+        <!-- Form: noValidate karena kita melakukan validasi sendiri di JS -->
+        <form id="form-onboarding" class="form" novalidate>
+          <!-- LANGKAH 1: Data Pribadi -->
+          <div class="form-step is-active" data-step="1">
+            <h2 class="form-step__title">Data Pribadi</h2>
+            <p class="form-step__desc">
+              Beri tahu kami sedikit tentang dirimu.
+            </p>
+
+            <div class="form-grid">
+              <!-- Setiap field punya label, input, dan elemen .error untuk pesan validasi -->
+              <div class="field field--full">
+                <label for="fullName"
+                  >Nama Lengkap <span class="req">*</span></label
+                >
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  placeholder="Mis. Andi Pratama"
+                />
+                <p class="error" data-error-for="fullName"></p>
+              </div>
+
+              <div class="field">
+                <label for="email">Email <span class="req">*</span></label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="nama@email.com"
+                />
+                <p class="error" data-error-for="email"></p>
+              </div>
+
+              <div class="field">
+                <label for="phone">Nomor HP <span class="req">*</span></label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="0812xxxxxxxx"
+                />
+                <p class="hint">Diawali "08", 10–14 digit</p>
+                <p class="error" data-error-for="phone"></p>
+              </div>
+
+              <div class="field">
+                <label for="birth"
+                  >Tanggal Lahir <span class="req">*</span></label
+                >
+                <input id="birth" name="birth" type="date" />
+                <p class="error" data-error-for="birth"></p>
+              </div>
+
+              <div class="field">
+                <label for="profession"
+                  >Profesi <span class="req">*</span></label
+                >
+                <select id="profession" name="profession">
+                  <option value="">Pilih profesi...</option>
+                  <option>Karyawan</option>
+                  <option>Wirausaha</option>
+                  <option>Mahasiswa/Pelajar</option>
+                  <option>Freelancer</option>
+                  <option>Lainnya</option>
+                </select>
+                <p class="error" data-error-for="profession"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- LANGKAH 2: Keuangan -->
+          <div class="form-step" data-step="2">
+            <h2 class="form-step__title">Pengaturan Keuangan</h2>
+            <p class="form-step__desc">
+              Atur saldo awal & budget bulananmu (opsional).
+            </p>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="startBalance"
+                  >Saldo Awal (Tunai) <span class="req">*</span></label
+                >
+                <div class="input-currency">
+                  <span class="input-currency__prefix">Rp</span>
+                  <input
+                    id="startBalance"
+                    name="startBalance"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="1.000.000"
+                  />
+                </div>
+                <p class="hint" id="startBalance-hint">
+                  Akan menjadi saldo dompet tunaimu.
+                </p>
+                <p class="error" data-error-for="startBalance"></p>
+              </div>
+
+              <div class="field">
+                <label for="monthlyBudget">Budget Bulanan</label>
+                <div class="input-currency">
+                  <span class="input-currency__prefix">Rp</span>
+                  <input
+                    id="monthlyBudget"
+                    name="monthlyBudget"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="3.500.000"
+                  />
+                </div>
+                <p class="hint" id="monthlyBudget-hint">
+                  Opsional. Untuk pengingat batas pengeluaran.
+                </p>
+                <p class="error" data-error-for="monthlyBudget"></p>
+              </div>
+            </div>
+
+            <div class="callout">
+              💡 Saldo awal akan tersimpan di dompet <b>Tunai</b>. Kamu bisa
+              menambah akun lain setelah onboarding.
+            </div>
+          </div>
+
+          <!-- LANGKAH 3: Konfirmasi -->
+          <div class="form-step" data-step="3">
+            <h2 class="form-step__title">Konfirmasi Data</h2>
+            <p class="form-step__desc">
+              Periksa kembali isianmu sebelum melanjutkan.
+            </p>
+
+            <!-- Isi dirender otomatis oleh JS lewat innerHTML -->
+            <dl class="summary" id="summary"></dl>
+
+            <label class="agree">
+              <input type="checkbox" id="agreed" />
+              <span
+                >Saya menyetujui <b>Syarat &amp; Ketentuan</b> dan
+                <b>Kebijakan Privasi</b> Dompetku.</span
+              >
+            </label>
+            <p class="error" data-error-for="agreed"></p>
+          </div>
+
+          <!-- Tombol navigasi antar-langkah -->
+          <div class="form-actions">
+            <button type="button" id="btn-back" class="btn btn--ghost" disabled>
+              ← Kembali
+            </button>
+            <button type="button" id="btn-next" class="btn btn--primary">
+              Lanjut →
+            </button>
+            <button
+              type="submit"
+              id="btn-submit"
+              class="btn btn--primary"
+              hidden
+            >
+              Selesai ✓
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!--
+    ===================================================================
+    2. APLIKASI UTAMA (setelah onboarding)
+    -------------------------------------------------------------------
+    Layout: Sidebar (kiri) + Main content (kanan).
+    Konten "view" digonta-ganti pakai class .is-active.
+    ===================================================================
+  -->
+    <section id="app" class="app" hidden>
+      <!-- SIDEBAR (navigasi) -->
+      <aside class="sidebar">
+        <div class="sidebar__brand">
+          <div class="logo">D</div>
+          <div>
+            <div class="sidebar__title">Dompetku</div>
+            <div class="sidebar__version">v1.0</div>
+          </div>
+        </div>
+
+        <!-- Kartu user mini -->
+        <div class="user-card">
+          <div class="avatar" id="user-avatar">U</div>
+          <div class="user-card__info">
+            <div class="user-card__name" id="user-name">Pengguna</div>
+            <div class="user-card__email" id="user-email">—</div>
+          </div>
+        </div>
+
+        <!-- Menu navigasi
+           data-route dipakai JS untuk berpindah view -->
+        <nav class="nav">
+          <button class="nav__item is-active" data-route="dashboard">
+            🏠 Dasbor
+          </button>
+          <button class="nav__item" data-route="transactions">
+            📋 Transaksi
+          </button>
+          <button class="nav__item" data-route="profile">👤 Profil</button>
+        </nav>
+
+        <button class="nav__item nav__item--reset" id="btn-reset">
+          ↺ Reset Aplikasi
+        </button>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main">
+        <!-- Topbar -->
+        <header class="topbar">
+          <button class="topbar__menu" id="btn-menu" aria-label="Buka menu">
+            ☰
+          </button>
+          <div class="topbar__greet">
+            <small id="greeting">Selamat datang</small>
+            <h2 id="greet-name">Pengguna</h2>
+          </div>
+          <button class="btn btn--primary" id="btn-add">
+            + Tambah Transaksi
+          </button>
+        </header>
+
+        <!-- VIEW 1: Dashboard -->
+        <section class="view is-active" data-view="dashboard">
+          <!-- Kartu saldo besar -->
+          <div class="balance-card">
+            <div class="balance-card__label">Total Saldo</div>
+            <div class="balance-card__amount" id="total-balance">Rp 0</div>
+
+            <div class="balance-card__stats">
+              <div class="stat">
+                <div class="stat__label">Pemasukan (bulan ini)</div>
+                <div class="stat__value stat__value--in" id="month-income">
+                  Rp 0
+                </div>
+              </div>
+              <div class="stat">
+                <div class="stat__label">Pengeluaran (bulan ini)</div>
+                <div class="stat__value stat__value--out" id="month-expense">
+                  Rp 0
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ringkasan: Budget + Akun -->
+          <div class="grid grid--2">
+            <article class="card" id="budget-card">
+              <h3 class="card__title">Budget Bulanan</h3>
+              <!-- Isi dirender oleh JS -->
+              <div id="budget-body"></div>
+            </article>
+
+            <article class="card">
+              <h3 class="card__title">Akun Saya</h3>
+              <ul class="account-list" id="account-list"></ul>
+            </article>
+          </div>
+
+          <!-- Aktivitas terbaru -->
+          <article class="card">
+            <header class="card__header">
+              <h3 class="card__title">Aktivitas Terbaru</h3>
+              <button class="link" data-route="transactions">
+                Lihat semua →
+              </button>
+            </header>
+            <ul class="tx-list" id="recent-list"></ul>
+          </article>
+        </section>
+
+        <!-- VIEW 2: Transactions -->
+        <section class="view" data-view="transactions">
+          <header class="page-header">
+            <div>
+              <h2 class="page-title">Transaksi</h2>
+              <p class="page-desc">Riwayat lengkap pemasukan & pengeluaran.</p>
+            </div>
+          </header>
+
+          <!-- Filter sederhana -->
+          <article class="card">
+            <div class="filter-bar">
+              <div class="seg">
+                <button class="seg__btn is-active" data-filter="all">
+                  Semua
+                </button>
+                <button class="seg__btn" data-filter="income">Pemasukan</button>
+                <button class="seg__btn" data-filter="expense">
+                  Pengeluaran
+                </button>
+              </div>
+              <input
+                id="search"
+                type="search"
+                class="search"
+                placeholder="Cari catatan..."
+              />
+            </div>
+            <ul class="tx-list" id="tx-list"></ul>
+          </article>
+        </section>
+
+        <!-- VIEW 3: Profile -->
+        <section class="view" data-view="profile">
+          <header class="page-header">
+            <div>
+              <h2 class="page-title">Profil</h2>
+              <p class="page-desc">Data pribadi & pengaturan akun.</p>
+            </div>
+          </header>
+
+          <article class="card">
+            <dl class="summary" id="profile-summary"></dl>
+          </article>
+        </section>
+      </main>
+    </section>
+
+    <!--
+    ===================================================================
+    3. MODAL: Tambah Transaksi
+    -------------------------------------------------------------------
+    Modal sederhana. Default tersembunyi (atribut "hidden").
+    Akan ditampilkan dengan menghapus atribut "hidden" lewat JS.
+    ===================================================================
+  -->
+    <div id="modal-add" class="modal" hidden>
+      <div class="modal__backdrop" data-close></div>
+      <div class="modal__panel">
+        <header class="modal__header">
+          <h3>Tambah Transaksi</h3>
+          <button class="modal__close" data-close aria-label="Tutup">✕</button>
+        </header>
+
+        <form id="form-add" class="form" novalidate>
+          <!-- Toggle tipe -->
+          <div class="seg seg--full">
+            <button
+              type="button"
+              class="seg__btn is-active"
+              data-type="expense"
+            >
+              ↓ Pengeluaran
+            </button>
+            <button type="button" class="seg__btn" data-type="income">
+              ↑ Pemasukan
+            </button>
+          </div>
+
+          <div class="field">
+            <label for="amount">Nominal <span class="req">*</span></label>
+            <div class="input-currency input-currency--lg">
+              <span class="input-currency__prefix">Rp</span>
+              <input
+                id="amount"
+                type="text"
+                inputmode="numeric"
+                placeholder="0"
+              />
+            </div>
+            <p class="hint" id="amount-hint">Masukkan jumlah dalam Rupiah.</p>
+            <p class="error" data-error-for="amount"></p>
+          </div>
+
+          <div class="field">
+            <label for="category">Kategori <span class="req">*</span></label>
+            <select id="category"></select>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="account">Akun <span class="req">*</span></label>
+              <select id="account"></select>
+            </div>
+            <div class="field">
+              <label for="date">Tanggal <span class="req">*</span></label>
+              <input id="date" type="datetime-local" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="note">Catatan</label>
+            <input
+              id="note"
+              type="text"
+              maxlength="80"
+              placeholder="Mis. Makan siang"
+            />
+          </div>
+
+          <div class="form-actions form-actions--right">
+            <button type="button" class="btn btn--ghost" data-close>
+              Batal
+            </button>
+            <button type="submit" class="btn btn--primary">Simpan ✓</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Script utama dimuat di akhir <body> agar semua elemen HTML sudah ada -->
+    <script src="app.js"></script>
+  </body>
+</html>
