@@ -942,9 +942,25 @@ body {
     font-size: 28px;
   }
   .tx-item {
-    grid-template-columns: 40px 1fr auto;
+    /* grid-template-columns: 40px 1fr auto auto; */
+    grid-template-columns: 40px 1fr auto auto;
   }
   .tx-item__delete {
-    display: none;
+    /* display: none; */
+    display: block;
+  }
+
+  .topbar {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 1200px) {
+  .grid--2 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .main {
+    padding: 40px;
   }
 }
