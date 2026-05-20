@@ -645,6 +645,7 @@ body {
   display: flex;
   gap: 24px;
   margin-top: 18px;
+  /* flex-wrap: wrap; */
   flex-wrap: wrap;
   position: relative;
 }
@@ -753,6 +754,8 @@ body {
   padding: 12px 4px;
   border-top: 1px solid var(--line);
   /* fr (pecahan) dirancang untuk membagikan ruang kosong yang tersisa secara fleksibel. Sebaliknya, auto mendasarkan ukurannya pada konten di dalam elemen tersebut. */
+  /* Saat digunakan dalam baris atau kolom yang sama, fr akan memenangkan ruang yang tersisa, sementara elemen auto akan menyusut hingga batas ukuran minimum kontennya agar fr bisa bekerja. */
+  /* Gunakan fr untuk tata letak responsif yang membutuhkan pembagian porsi layar yang rapi (seperti struktur sidebar dan area konten utama).Gunakan auto saat Anda ingin ukuran sel grid pas dengan elemen di dalamnya (seperti tombol, badge, atau ikon). */
 }
 .tx-item:first-child {
   border-top: none;
