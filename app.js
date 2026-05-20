@@ -228,15 +228,17 @@ function createDefaultState() {
     profile: null,
     accounts: DEFAULT_ACCOUNTS, // [{id, name, color, balance}]
     transactions: [], // [{id, type, amount, category, account, date, note}]
+    theme: "light",
   };
 }
 
 /** Baca data dari localStorage. Jika belum ada / rusak, kembalikan default. */
 function loadState() {
   try {
+    const defaultState = createDefaultState();
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return createDefaultState();
-    return Object.assign(createDefaultState(), JSON.parse(raw));
+    if (!raw) return defaultState;
+    return Object.assign(defaultState, JSON.parse(raw));
   } catch (err) {
     console.error("Gagal load state:", err);
     return createDefaultState();
