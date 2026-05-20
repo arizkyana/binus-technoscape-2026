@@ -565,13 +565,6 @@ body {
 .view + .view {
   margin-top: 0;
 }
-.card + .card,
-.card + .grid,
-.grid + .card,
-.balance-card + .grid,
-.grid + .card {
-  margin-top: 18px;
-}
 
 .grid {
   display: grid;
@@ -604,6 +597,13 @@ body {
 }
 
 /* ---------- 6. KOMPONEN SPESIFIK ---------- */
+
+/* Dashboard */
+.view[data-view="dashboard"].is-active {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
 /* Kartu saldo */
 .balance-card {
@@ -750,6 +750,7 @@ body {
   align-items: center;
   padding: 12px 4px;
   border-top: 1px solid var(--line);
+  /* fr (pecahan) dirancang untuk membagikan ruang kosong yang tersisa secara fleksibel. Sebaliknya, auto mendasarkan ukurannya pada konten di dalam elemen tersebut. */
 }
 .tx-item:first-child {
   border-top: none;
