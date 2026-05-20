@@ -198,10 +198,7 @@ function getExpenseByCategory() {
   });
 
   const totals = currentMonthExpenses.reduce((acc, item) => {
-    Object.assign(acc, {
-      ...acc,
-      [item.category]: item.amount,
-    });
+    acc[item.category] = (acc[item.category] || 0) + item.amount;
     return acc;
   }, {});
 
