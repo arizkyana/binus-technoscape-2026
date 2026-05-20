@@ -432,6 +432,8 @@ function renderDashboard() {
 
   console.log("state.transactions.length: ", state.transactions.length);
   console.log("total saldo: ", total);
+
+  renderCategoryChart();
 }
 
 /** Template untuk satu baris transaksi (dipakai di dashboard & halaman transaksi). */
@@ -496,6 +498,51 @@ function renderProfile() {
     <div><dt>Profesi</dt>     <dd>${p.profession || "—"}</dd></div>
     <div><dt>Budget /bln</dt> <dd>${p.monthlyBudget ? formatIDR(p.monthlyBudget) : "—"}</dd></div>
   `;
+}
+
+/* render chart expense by category */
+let categoryChart = null;
+function renderCategoryChart() {
+  const data = getExpenseByCategory();
+  const canvas = document.getElementById("chart-category");
+
+  if (categoryChart) {
+    categoryChart.destroy();
+  }
+
+  if (data.length === 0) {
+    canvas.style.display = "none";
+    return;
+  }
+
+  canvas.style.display = "";
+  categoryChart = new Chart(canvas, {
+    type: "doughnut",
+    data: {
+      labels: data.map((item) => item.label),
+      datasets: [
+        {
+          data: data.map((item) => item.value),
+          backgroundColor: data.map((item) => item.color),
+          borderWidth: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "right" },
+        tooltip: {
+          callbacks: {
+            label: function (ctx) {
+              return `${ctx.label}:${formatIDR(ctx.raw)}`;
+            },
+          },
+        },
+      },
+    },
+  });
 }
 
 /* ===== 5. VALIDASI FORM ===== */
