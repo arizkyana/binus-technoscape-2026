@@ -313,15 +313,15 @@ function renderOnboardingStep() {
 
   // Jika sampai langkah konfirmasi, tampilkan ringkasan.
   if (onboardingStep === 3) {
-    const d = onboardingData;
+    const data = onboardingData;
     document.getElementById("summary").innerHTML = `
-      <div><dt>Nama</dt>      <dd>${d.fullName || "—"}</dd></div>
-      <div><dt>Email</dt>     <dd>${d.email || "—"}</dd></div>
-      <div><dt>No. HP</dt>    <dd>${d.phone || "—"}</dd></div>
-      <div><dt>Tgl. Lahir</dt><dd>${d.birth ? formatDate(d.birth) : "—"}</dd></div>
-      <div><dt>Profesi</dt>   <dd>${d.profession || "—"}</dd></div>
-      <div><dt>Saldo Awal</dt><dd>${d.startBalance !== "" ? formatIDR(d.startBalance) : "—"}</dd></div>
-      <div><dt>Budget /bln</dt><dd>${d.monthlyBudget !== "" ? formatIDR(d.monthlyBudget) : "—"}</dd></div>
+      <div><dt>Nama</dt>      <dd>${data.fullName || "—"}</dd></div>
+      <div><dt>Email</dt>     <dd>${data.email || "—"}</dd></div>
+      <div><dt>No. HP</dt>    <dd>${data.phone || "—"}</dd></div>
+      <div><dt>Tgl. Lahir</dt><dd>${data.birth ? formatDate(data.birth) : "—"}</dd></div>
+      <div><dt>Profesi</dt>   <dd>${data.profession || "—"}</dd></div>
+      <div><dt>Saldo Awal</dt><dd>${data.startBalance !== "" ? formatIDR(data.startBalance) : "—"}</dd></div>
+      <div><dt>Budget /bln</dt><dd>${data.monthlyBudget !== "" ? formatIDR(data.monthlyBudget) : "—"}</dd></div>
     `;
   }
 }
@@ -463,6 +463,7 @@ function renderTxItem(tx) {
 
 /* ---------- Halaman Transaksi ---------- */
 function renderTransactions() {
+  // 2. kemudian renderTransactions
   let list = state.transactions.slice();
 
   // Filter tipe
@@ -522,6 +523,7 @@ function clearErrors() {
 
 /** Validasi step onboarding. Return true jika valid. */
 function validateOnboardingStep(step) {
+  // 3. terakhir validateOnboardingStep
   clearErrors();
   let ok = true;
   const d = onboardingData;
@@ -537,6 +539,7 @@ function validateOnboardingStep(step) {
     }
     const phone = d.phone.replace(/[\s-]/g, "");
     if (!/^08\d{8,12}$/.test(phone)) {
+      // \d{8,12} artinya di ikuti minimal 8 atau maksimal 12 digit
       setError("phone", "Nomor HP harus diawali 08 (10–14 digit)");
       ok = false;
     }
@@ -589,10 +592,12 @@ function validateOnboardingStep(step) {
  * Pakai event delegation di form agar fleksibel.
  */
 function setupOnboarding() {
+  // 1. bahas dulu setupOnboarding
   const form = document.getElementById("form-onboarding");
 
   // Update onboardingData setiap kali user mengetik.
   form.addEventListener("input", function (e) {
+    // Event Delegation
     const t = e.target;
     if (!t.name && t.id !== "agreed") return;
 
