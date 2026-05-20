@@ -278,6 +278,8 @@ function renderApp() {
   document.getElementById("onboarding").hidden = state.onboarded;
   document.getElementById("app").hidden = !state.onboarded;
 
+  console.log("state.transactions: ", state.transactions);
+
   if (state.onboarded) {
     renderTopbar();
     renderSidebar();
@@ -428,6 +430,9 @@ function renderDashboard() {
   document.getElementById("recent-list").innerHTML = recent.length
     ? recent.map(renderTxItem).join("")
     : `<li class="empty">Belum ada transaksi. Tambahkan yang pertama!</li>`;
+
+  console.log("state.transactions.length: ", state.transactions.length);
+  console.log("total saldo: ", total);
 }
 
 /** Template untuk satu baris transaksi (dipakai di dashboard & halaman transaksi). */
