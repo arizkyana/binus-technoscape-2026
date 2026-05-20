@@ -463,8 +463,7 @@ function renderTxItem(tx) {
 
 /* ---------- Halaman Transaksi ---------- */
 function renderTransactions() {
-  // 2. kemudian renderTransactions
-  let list = state.transactions.slice();
+  let list = state.transactions.slice(); // untuk copy seluruh element
 
   // Filter tipe
   if (txFilter.type !== "all") {
@@ -483,6 +482,8 @@ function renderTransactions() {
   document.getElementById("tx-list").innerHTML = list.length
     ? list.map(renderTxItem).join("")
     : `<li class="empty">Tidak ada transaksi yang cocok.</li>`;
+
+  console.log("render transaction call");
 }
 
 /* ---------- Halaman Profil ---------- */
@@ -724,6 +725,8 @@ function setupTransactionFilter() {
 
   // Tombol hapus (event delegation di body)
   document.body.addEventListener("click", function (e) {
+    // event delegation dengan tipe "click" pada seluruh body
+    console.log(e.target.dataset);
     const id = e.target.dataset.delete;
     if (!id) return;
     if (!confirm("Hapus transaksi ini?")) return;
